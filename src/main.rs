@@ -201,7 +201,7 @@ fn run() -> Result<()> {
 fn main() {
     match run() {
         Err(e) => {
-            println!("{}", e);
+            eprintln!("error: {}", e);
             exit(1)
         }
         _ => {}
