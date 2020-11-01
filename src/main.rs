@@ -14,7 +14,7 @@ use std::{
 #[derive(Debug)]
 struct Guess {
     word: String,
-    count: Option<u8>,
+    count: Option<usize>,
 }
 
 impl Guess {
@@ -22,7 +22,7 @@ impl Guess {
         Guess { word, count: None }
     }
 
-    fn new_with_count(word: String, count: u8) -> Guess {
+    fn new_with_count(word: String, count: usize) -> Guess {
         Guess {
             word,
             count: Some(count),
@@ -62,7 +62,7 @@ impl TryFrom<&str> for Guess {
             .as_str();
 
         if count_str.len() > 0 {
-            let count: u8 = count_str
+            let count: usize = count_str
                 .parse()
                 .expect("the regex should not allow this to fail");
 
