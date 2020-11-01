@@ -68,7 +68,8 @@ impl TryFrom<&str> for Guess {
         let word = captures
             .name("word")
             .expect("word should have been successfully captured by regex")
-            .as_str();
+            .as_str()
+            .to_lowercase();
 
         let count_str = captures
             .name("count")
