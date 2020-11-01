@@ -50,7 +50,7 @@ impl TryFrom<&str> for Guess {
     fn try_from(line: &str) -> Result<Self> {
         lazy_static! {
             static ref GUESS_REGEX: Regex =
-                Regex::new(r"(?P<word>[[:alpha:]]+)[[:space:]]*(?P<count>[[:digit:]]*)")
+                Regex::new(r"(?P<word>[[:alpha:]]+)[[:space:]]+(?P<count>[[:digit:]]*)")
                     .expect("could not compile regexp");
         }
 
