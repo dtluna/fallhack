@@ -98,20 +98,52 @@ impl fmt::Display for ParseGuessError {
 }
 
 #[derive(Debug)]
+struct NoGuessesError {}
+
+impl fmt::Display for NoGuessesError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "no guesses in input",)
+    }
+}
+
+#[derive(Debug)]
+struct UnequalLengthsError {}
+
+impl fmt::Display for UnequalLengthsError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "guess words have unequal lengths",)
+    }
+}
+
+#[derive(Debug)]
 enum Error {
     ParseGuess(ParseGuessError),
     IO(io::Error),
+    NoGuesses(NoGuessesError),
+    UnequalLengths(UnequalLengthsError),
 }
 
 impl From<ParseGuessError> for Error {
     fn from(err: ParseGuessError) -> Self {
-        Error::ParseGuess(err)
+        Self::ParseGuess(err)
     }
 }
 
 impl From<io::Error> for Error {
     fn from(err: io::Error) -> Self {
-        Error::IO(err)
+        Self::IO(err)
+    }
+}
+
+impl From<NoGuessesError> for Error {
+    fn from(err: NoGuessesError) -> Self {
+        Self::NoGuesses(err)
+    }
+}
+
+impl From<UnequalLengthsError> for Error {
+    fn from(err: UnequalLengthsError) -> Self {
+        Self::UnequalLengths(err)
     }
 }
 
@@ -120,6 +152,8 @@ impl fmt::Display for Error {
         match *self {
             Error::IO(ref err) => write!(f, "IO error: {}", err),
             Error::ParseGuess(ref err) => write!(f, "parsing guess error: {}", err),
+            Error::NoGuesses(ref err) => write!(f, "{}", err),
+            Error::UnequalLengths(ref err) => write!(f, "{}", err),
         }
     }
 }
@@ -135,6 +169,22 @@ fn parse_guesses_from_stdin() -> Result<Vec<Guess>> {
     for line in buffer.lines() {
         let guess: Guess = line.try_into()?;
         guesses.push(guess);
+    }
+
+    if guesses.len() == 0 {
+        return Err(NoGuessesError {}.into());
+    }
+
+    let len = guesses
+        .get(0)
+        .expect("we checked for length above")
+        .word
+        .len();
+
+    for guess in guesses.iter() {
+        if guess.word.len() != len {
+            return Err(UnequalLengthsError {}.into());
+        }
     }
 
     Ok(guesses)
