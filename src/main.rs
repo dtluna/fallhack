@@ -28,6 +28,20 @@ impl Guess {
             count: Some(count),
         }
     }
+
+    fn num_of_common_letters(&self, other: &Guess) -> usize {
+        let mut num: usize = 0;
+
+        for (index, letter) in self.word.char_indices() {
+            let other_letter: char = other.word.as_bytes()[index].into();
+            if letter == other_letter {
+                // we've checked that words have equal lengths already
+                num += 1;
+            }
+        }
+
+        num
+    }
 }
 
 impl TryFrom<&str> for Guess {
@@ -193,7 +207,22 @@ fn parse_guesses_from_stdin() -> Result<Vec<Guess>> {
 fn run() -> Result<()> {
     let guesses = parse_guesses_from_stdin()?;
 
-    println!("guesses {:?}", guesses);
+    let guesses_with_count: Vec<&Guess> = guesses
+        .iter()
+        .filter(|guess| guess.count.is_some())
+        .collect();
+    let guesses_without_count = guesses.iter().filter(|guess| guess.count.is_none());
+
+    let filtered_guesses = guesses_without_count.filter(|guess_without_count| {
+        guesses_with_count.iter().all(|guess_with_count| {
+            guess_with_count.num_of_common_letters(guess_without_count)
+                == guess_with_count.count.unwrap()
+        })
+    });
+
+    for filtered_guess in filtered_guesses {
+        println!("{}", filtered_guess.word);
+    }
 
     Ok(())
 }

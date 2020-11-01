@@ -1,0 +1,11 @@
+driving 3
+barrens
+meaning 5
+leaving
+holding
+leading
+sending
+healing
+lending
+options
+heading
